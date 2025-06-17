@@ -1,0 +1,29 @@
+#!/bin/bash
+# Skrip untuk mengarsipkan direktori log dengan timestamp
+# $(whoami) akan secara otomatis menggunakan nama user Anda saat ini (pahala)
+sudo chown $(whoami):$(whoami) ~/log-archive-tool/log-archive
+# Periksa apakah argumen direktori diberikan
+if [ -z "$1" ]; then
+  echo "Error: Anda harus menyertakan path direktori log."
+  echo "Contoh: $0 /var/log"
+  exit 1
+fi
+
+log_dir=$1
+
+# Periksa apakah direktori yang diberikan ada
+if [ ! -d "$log_dir" ]; then
+  echo "Error: Direktori '$log_dir' tidak ditemukan."
+  exit 1
+fi
+
+dest_dir=~/log_archives
+mkdir -p "$dest_dir"
+timestamp=$(date +"%Y%m%d_%H%M%S")
+
+base_name=$(basename "$log_dir")
+archive_file="${base_name}_archive_${timestamp}.tar.gz"
+
+echo "Mengarsipkan direktori '$log_dir'..."
+tar -czvf "$dest_dir/$archive_file" "$log_dir"
+echo "Arsip berhasil dibuat: $dest_dir/$archive_file"
